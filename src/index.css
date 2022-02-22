@@ -1,0 +1,39 @@
+:root {
+  background-color: #222222;
+}
+
+button.box {
+  color: #FFF;
+  font-size: 35px;
+  text-transform: capitalize;
+  vertical-align: top;
+  background-color: #222222;
+  border: 1px solid #c4c4c4;
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.box.wrong {
+  background-color: #444;
+}
+
+.box.close {
+  background-color: #cc3;
+}
+
+.box.correct {
+  background-color: #3c3;
+}
+
+.board {
+  position: fixed;
+  transform: translate(-50%, 0);
+  left: 50%;
+}
+
+p {
+  color: #fff;
+  text-transform: uppercase;
+}
