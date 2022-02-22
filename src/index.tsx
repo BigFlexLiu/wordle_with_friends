@@ -39,10 +39,12 @@ function Board(props: any) {
       newIdx[1] += 1;
     }
     // Complete row if it is completely filled
-    // TODO: validate row against dictionary
     if (event.key === "Enter" && newIdx[1] === props.length) {
-      newIdx[0] += 1;
-      newIdx[1] = 0;
+      let word: string = newGrids[newIdx[0]].join('');
+      if (props.dict.includes(word)) {
+        newIdx[0] += 1;
+        newIdx[1] = 0;
+      }
     }
     // Remove last input on the row
     if (event.key === "Backspace" && newIdx[1] > 0) {
