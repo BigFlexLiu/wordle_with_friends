@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
@@ -17,8 +17,8 @@ function Row(props: any) {
     return <Box value={value} />;
   }
 
-  let className = "row";
-  let row = [];
+  let className: string = "row";
+  let row: Array<JSX.Element> = [];
   for (var value in props.values) {
     row.push(renderBox(props.values[value]));
   }
@@ -30,24 +30,30 @@ function Board(props: any) {
     return <Row values={values} />;
   }
 
-  function updateGrids(event: KeyboardEvent) {
-    // update grids
-    let newGrids = grids.slice();
-    newGrids[idx[0]][idx[1]] = event.key;
-    setGrids(newGrids);
-    // update index
-    let newIdx = idx.slice();
-    newIdx[1] += 1;
-    if (newIdx[1] === props.length) {
+  function handleKey(event: KeyboardEvent) {
+    let newGrids: Array<Array<string>> = grids.slice();
+    let newIdx: Array<number> = idx.slice();
+    // Adds input if is letter and row is not filled
+    if (event.key.match(/^[a-z]$/) && idx[1] < props.length) {
+      newGrids[idx[0]][idx[1]] = event.key;
+      newIdx[1] += 1;
+    }
+    // Complete row if it is completely filled
+    // TODO: validate row against dictionary
+    if (event.key === "Enter" && newIdx[1] === props.length) {
       newIdx[0] += 1;
       newIdx[1] = 0;
     }
+    // Remove last input on the row
+    if (event.key === "Backspace" && newIdx[1] > 0) {
+      newIdx[1] -= 1;
+      newGrids[newIdx[0]][newIdx[1]] = "";
+    }
+    setGrids(newGrids);
     setIdx(newIdx);
-    console.log(newGrids);
-    console.log(newIdx);
   }
 
-  const className = "board";
+  const className: string = "board";
   // Populates grids with distinct arrays
   const [grids, setGrids] = useState(
     Array(props.tries)
@@ -57,9 +63,8 @@ function Board(props: any) {
   const [idx, setIdx] = useState([0, 0]);
 
   useEffect(() => {
-    document.addEventListener("keydown", updateGrids
-    );
-    return () => document.removeEventListener("keydown", updateGrids);
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   });
 
   let board = [];
@@ -70,8 +75,8 @@ function Board(props: any) {
 }
 
 function Game() {
-  let length = 5;
-  let height = 5;
+  let length: number = 5;
+  let height: number = 5;
   // Fetch words of length long
   let dict: string[] = [];
   fetch("usa.txt")
