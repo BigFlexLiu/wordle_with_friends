@@ -15,11 +15,11 @@ button.box {
   margin-bottom: 5px;
 }
 
-.box.wrong {
+.box.unmatched {
   background-color: #444;
 }
 
-.box.close {
+.box.wrong_ordered {
   background-color: #cc3;
 }
 
@@ -27,7 +27,7 @@ button.box {
   background-color: #3c3;
 }
 
-.board {
+.gameboard {
   position: fixed;
   transform: translate(-50%, 0);
   left: 50%;
@@ -36,4 +36,16 @@ button.box {
 p {
   color: #fff;
   text-transform: uppercase;
+}
+
+.keyboard {
+  position:absolute;
+  top:100vh;
+  transform:translate(-25%, -150%);
+  width: 200%;
+}
+
+.center {
+  text-align: center;
+  left: 50%;
 }
