@@ -16,7 +16,7 @@ button.box {
 }
 
 .box.unmatched {
-  background-color: #444;
+  background-color: #888;
 }
 
 .box.wrong_ordered {
@@ -48,4 +48,49 @@ p {
 .center {
   text-align: center;
   left: 50%;
+}
+
+h1 {
+  flex-grow: 1;
+  color: #fff;
+  text-align: center;
+}
+
+.dropdown_btn {
+  font-size: 2vw;
+}
+
+.menu {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu button {
+  
+}
+
+.sidebar {
+  height: 100%;
+  position: fixed;
+  background-color: #000;
+  transition: 0.5s;
+}
+
+.sidebar * {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebarHeading {
+  text-align: center;
+  flex-grow: 1;
+}
+
+.make_wordle * {
+  font-size: 1.5em;
 }
