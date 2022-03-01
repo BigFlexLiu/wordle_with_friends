@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import { decode } from "./hash";
 import "./index.css";
-import Menu from "./menu";
 import PersistentDrawerLeft from "./sidebar";
 
 class LetterState {
@@ -96,6 +96,13 @@ function Gameboard(props: any) {
   }
 
   function handleKey(event: KeyboardEvent) {
+    // If a text field is focused, then do nothing
+    const element : Element | null = document.activeElement;
+    const sidebar : Element = document.getElementById('box')!;
+    if (element && sidebar.contains(element)) {
+      return;
+    }
+
     let newGrids: Letter[][] = grids.slice();
     let newIdx: Array<number> = idx.slice();
     // Adds input if is letter and row is not filled
@@ -193,37 +200,57 @@ function Gameboard(props: any) {
 function Game() {
   const title: string = "wordle with friends";
   const textfile = "wiki-100k.txt";
-  const length = 5;
   const [tries, setTries] = useState<number>(6);
   const [dict, setDict] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
 
-  document.title = title;
+  // Fetch link info to set word and tries
+  const linkdata: string = window.location.search;
+  const [assignedWord, assignedTries] = decode(linkdata) ?? [null, null];
+  useEffect(() => {
+    if (assignedWord && assignedTries) {
+      setWord(assignedWord);
+      setTries(assignedTries);
+    }
+  }, []);
+
   // Fetch words of length long
   useEffect(() => {
     fetch(textfile)
       .then((response) => response.text())
       .then((text) => {
+        const wordLength = assignedWord ? assignedWord.length : 5;
+        const plDict: string[] = [];
         text.split("\n").forEach((value) => {
-          if (value.length === length) {
-            dict.push(value); // Intentional
+          if (value.length === wordLength) {
+            plDict.push(value); // Intentional
           }
         });
-        setWord(dict[Math.floor(Math.random() * dict.length)]);
+        setDict(plDict);
+        if (!assignedWord) {
+          setWord(plDict[Math.floor(Math.random() * dict.length)]);
+        }
+        console.log(
+          "There are " + plDict.length + " " + wordLength + "-letter words."
+        );
       });
   }, []);
 
   if (word !== "") {
-    console.log("There are " + dict.length + " " + length + "-letter words.");
     console.log("The answer is " + word + ".");
   }
 
-  return (
-    <div>
-      <PersistentDrawerLeft setWord={setWord} setTries={setTries}/>
-      <Gameboard dict={dict} word={word} length={word.length | length} tries={tries} />
-    </div>
-  );
+  document.title = title;
+
+  if (word !== "") {
+    return (
+      <div>
+        <PersistentDrawerLeft dict={dict}/>
+        <Gameboard dict={dict} word={word} length={word.length} tries={tries} />
+      </div>
+    );
+  }
+  return null;
 }
 
 ReactDOM.render(<Game />, document.getElementById("root"));

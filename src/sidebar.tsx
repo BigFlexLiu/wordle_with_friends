@@ -12,6 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { ClassNames } from "@emotion/react";
+import * as Hash from "./hash";
 
 const drawerWidth = 50;
 
@@ -66,6 +67,8 @@ export default function PersistentDrawerLeft(props: any) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
+  const [generated, setGenerated] = React.useState<string | null>(null);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -74,16 +77,61 @@ export default function PersistentDrawerLeft(props: any) {
     setOpen(false);
   };
 
-  // Gives custom warning about invalid word
-  let input = document.getElementById("input_word") as HTMLInputElement | null;
-  if (input) {
-    input!.oninput = (e) => {
-      input!.setCustomValidity("");
-      input!.oninvalid = (event) => {
-        input!.setCustomValidity("Word can only contain alphabets.");
-      };
-    };
+  const [inputWord, setInputWord] = React.useState("");
+  const [inputTries, setInputTries] = React.useState(6);
+  const [isInputWordValid, setIsInputWordValid] = React.useState(false);
+  const [isInputTriesValid, setIsInputTriesValid] = React.useState(true);
+
+  function handleInputWordOnChange(event: { target: HTMLInputElement }) {
+    const newWord: string = event.target.value;
+    // Check new word only contains letters
+    const match = newWord.match(/[a-z]*/);
+    if (match && match[0] !== newWord) {
+      event.target.setCustomValidity("word can only contain letters");
+      setIsInputWordValid(false);
+      return;
+    }
+    if (!props.dict.includes(newWord)) {
+      event.target.setCustomValidity("word not in the dictionary. :(");
+      setInputWord(newWord);
+      setIsInputWordValid(false);
+      return;
+    }
+    event.target.setCustomValidity("");
+    setInputWord(newWord);
+    setIsInputWordValid(true);
   }
+
+  function handleInputTriesOnChange(event: { target: HTMLInputElement }) {
+    const newTries: number = Number(event.target.value);
+    if (
+      isNaN(newTries) ||
+      newTries < 1 ||
+      10 < newTries ||
+      !Number.isInteger(newTries)
+    ) {
+      event.target.setCustomValidity(
+        "The number of tries must be a integer between 1-10."
+      );
+      setIsInputTriesValid(false);
+      return;
+    }
+    setInputTries(newTries);
+    setIsInputTriesValid(true);
+  }
+
+  // Gives custom warning about invalid word
+  // const inputWord = document.getElementById(
+  //   "input_word"
+  // ) as HTMLInputElement | null;
+  // if (inputWord) {
+  //   inputWord!.oninput = (e) => {
+  //     inputWord!.setCustomValidity("");
+  //     inputWord!.oninvalid = (event) => {
+  //       inputWord!.setCustomValidity("Word can only contain alphabets.");
+  //     };
+  //   };
+  // }
 
   // Close the appbar if the user clicks outside of it
   window.onclick = function (event) {
@@ -98,7 +146,7 @@ export default function PersistentDrawerLeft(props: any) {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box id="box" sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -142,20 +190,24 @@ export default function PersistentDrawerLeft(props: any) {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <form className="make_wordle" action="" method="get">
+        <form className="make_wordle" action="#" method="get">
           <label>Enter your word: </label>
           <input
             id="input_word"
             type="text"
+            value={inputWord}
+            onChange={handleInputWordOnChange}
             placeholder="your word"
-            size={15}
-            pattern="[a-zA-Z]+"
+            size={Hash.wordMaxLength}
+            maxLength={Hash.wordMaxLength}
           ></input>
           <br></br>
           <label>Enter number of tries: </label>
           <input
             id="input_tries"
             type="number"
+            value={inputTries}
+            onChange={handleInputTriesOnChange}
             min={1}
             max={10}
             required
@@ -163,11 +215,17 @@ export default function PersistentDrawerLeft(props: any) {
           <br></br>
           <input
             type="submit"
-            onClick={() => {
-              generateWordle();
+            onClick={(e) => {
+              if (isInputTriesValid && isInputWordValid) {
+                generateWordle();
+              } else {
+                setGenerated(null);
+              }
             }}
             value="Generate"
           ></input>
+          {generated && <h2>Go to the following link</h2>}
+          {generated && <h3 id="generated">{generated}</h3>}
         </form>
       </Drawer>
       <Main open={open}>
@@ -176,15 +234,11 @@ export default function PersistentDrawerLeft(props: any) {
     </Box>
   );
 
-  function generateWordle() {
-    const word: string = (
-      document.getElementById("input_word") as HTMLInputElement
-    ).value;
-    const tries: number = parseInt(
-      (document.getElementById("input_tries") as HTMLInputElement).value
-    );
+  function onSubmit(e: any) {
+    console.log();
+  }
 
-    props.setWord(word);
-    props.setTries(tries);
+  function generateWordle() {
+    setGenerated(Hash.encode(inputWord, inputTries));
   }
 }

@@ -29,6 +29,8 @@ button.box {
 
 .gameboard {
   position: fixed;
+  width: 100vw;
+  text-align: center;
   transform: translate(-50%, 0);
   left: 50%;
 }
@@ -93,4 +95,8 @@ h1 {
 
 .make_wordle * {
   font-size: 1.5em;
+}
+
+#generated {
+  word-wrap: break-word;
 }
