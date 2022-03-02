@@ -11,7 +11,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { ClassNames } from "@emotion/react";
 import * as Hash from "./hash";
 
 const drawerWidth = 50;
@@ -77,6 +76,8 @@ export default function PersistentDrawerLeft(props: any) {
     setOpen(false);
   };
 
+  const formStyle: React.CSSProperties = { fontSize: "1.5em" };
+
   const [inputWord, setInputWord] = React.useState("");
   const [inputTries, setInputTries] = React.useState(6);
   const [isInputWordValid, setIsInputWordValid] = React.useState(false);
@@ -119,19 +120,6 @@ export default function PersistentDrawerLeft(props: any) {
     setInputTries(newTries);
     setIsInputTriesValid(true);
   }
-
-  // Gives custom warning about invalid word
-  // const inputWord = document.getElementById(
-  //   "input_word"
-  // ) as HTMLInputElement | null;
-  // if (inputWord) {
-  //   inputWord!.oninput = (e) => {
-  //     inputWord!.setCustomValidity("");
-  //     inputWord!.oninvalid = (event) => {
-  //       inputWord!.setCustomValidity("Word can only contain alphabets.");
-  //     };
-  //   };
-  // }
 
   // Close the appbar if the user clicks outside of it
   window.onclick = function (event) {
@@ -180,7 +168,15 @@ export default function PersistentDrawerLeft(props: any) {
         open={open}
       >
         <DrawerHeader>
-          <h2 className="sidebarHeading">make your wordle</h2>
+          <h2
+            className="sidebarHeading"
+            style={{
+              textAlign: "center",
+              flexGrow: "1",
+            }}
+          >
+            make your wordle
+          </h2>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -191,8 +187,9 @@ export default function PersistentDrawerLeft(props: any) {
         </DrawerHeader>
         <Divider />
         <form className="make_wordle" action="#" method="get">
-          <label>Enter your word: </label>
+          <label style={formStyle}>Enter your word: </label>
           <input
+            style={formStyle}
             id="input_word"
             type="text"
             value={inputWord}
@@ -202,8 +199,9 @@ export default function PersistentDrawerLeft(props: any) {
             maxLength={Hash.wordMaxLength}
           ></input>
           <br></br>
-          <label>Enter number of tries: </label>
+          <label style={formStyle}>Enter number of tries: </label>
           <input
+            style={formStyle}
             id="input_tries"
             type="number"
             value={inputTries}
@@ -214,6 +212,7 @@ export default function PersistentDrawerLeft(props: any) {
           ></input>
           <br></br>
           <input
+            style={formStyle}
             type="submit"
             onClick={(e) => {
               if (isInputTriesValid && isInputWordValid) {
@@ -225,7 +224,16 @@ export default function PersistentDrawerLeft(props: any) {
             value="Generate"
           ></input>
           {generated && <h2>Go to the following link</h2>}
-          {generated && <h3 id="generated">{generated}</h3>}
+          {generated && (
+            <h3
+              id="generated"
+              style={{
+                wordWrap: "break-word",
+              }}
+            >
+              {generated}
+            </h3>
+          )}
         </form>
       </Drawer>
       <Main open={open}>
@@ -233,10 +241,6 @@ export default function PersistentDrawerLeft(props: any) {
       </Main>
     </Box>
   );
-
-  function onSubmit(e: any) {
-    console.log();
-  }
 
   function generateWordle() {
     setGenerated(Hash.encode(inputWord, inputTries));
