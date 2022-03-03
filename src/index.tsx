@@ -1,67 +1,79 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
+import { JsxAttributes, transform } from "typescript";
 import { decode } from "./hash";
 import "./index.css";
 import { PersistentDrawerLeft } from "./sidebar";
 import { wordsList } from './words';
 
-// TODO use enum
-class LetterState {
-  // Create new instances of the same class as static attributes
-  static unvalidated = new LetterState("unvalidated");
-  static unmatched = new LetterState("unmatched");
-  static wrong_ordered = new LetterState("wrong_ordered");
-  static correct = new LetterState("correct");
-
-  name: string = "";
-
-  constructor(name: string) {
-    this.name = name;
-  }
+enum LetterState {
+  unvalidated = "unvalidated",
+  unmatched = "unmatched",
+  wrong_ordered = "wrong_ordered",
+  correct = "correct",
 }
 
 // Corresponds to each letter input
 class Letter {
   letter: string = "";
-  //  0: unvalidated
-  //  1: no match
-  //  2: wrong order
-  //  3: correct
   state: LetterState = LetterState.unvalidated;
 }
 
-function Box(props: any) {
-  const className = "box";
+function Box({ letter }: { letter: Letter }) {
+  const classNames = ["box", letter.state];
+  let backgroundColor = "#222222";
+  switch (letter.state) {
+    case LetterState.unmatched:
+      backgroundColor = "#888888";
+      break;
+    case LetterState.wrong_ordered:
+      backgroundColor = "#cc3";
+      break;
+    case LetterState.correct:
+      backgroundColor = "#3c3";
+      break;
+  }
 
   return (
-    <button className={className + " " + props.value.state.name} disabled>
-      {props.value.letter}
+    <button
+    key={letter.letter}
+      className={classNames.join(" ")}
+      style={{
+        color: "#FFF",
+        fontSize: "35px",
+        textTransform: "capitalize",
+        verticalAlign: "top",
+        backgroundColor,
+        border: "1px solid #c4c4c4",
+        width: "50px",
+        height: "50px",
+        marginRight: "5px",
+        marginBottom: "5px",
+      }}
+      disabled
+    >
+      {letter.letter}
     </button>
   );
 }
 
-function Row(props: any) {
-  function renderBox(value: Letter) {
-    return <Box value={value} />;
+function Row({ letters, center }: {letters: Letter[]; center: boolean }) {
+  let classNames = ["row"];
+  let row: Array<JSX.Element> = letters.map((e, i) => <Box key={i} letter={e} />);
+  const style: React.CSSProperties = {};
+  if (center) {
+    style.textAlign = "center";
+    style.left = "50%";
   }
-
-  let className: string = "row";
-  let row: Array<JSX.Element> = [];
-  for (var i in props.values) {
-    row.push(renderBox(props.values[i]));
-  }
-  if (props.center) {
-    className += " center";
-  }
-  return <div className={className}>{row}</div>;
+  return (
+    <div className={classNames.join(" ")} style={style}>
+      {row}
+    </div>
+  );
 }
 
-function Keyboard(props: any) {
-  function renderRow(values: Letter[]) {
-    return <Row values={values} center />;
-  }
-
-  const classname = "keyboard";
+function Keyboard({ grids }: { grids: Letter[][] }) {
+  const classnames = ["keyboard"];
   // letters in the order placed on the keyboard
   const keys: Letter[][] = [
     "qwertyuiop".split(""),
@@ -75,9 +87,9 @@ function Keyboard(props: any) {
     })
   );
   const keyList: Letter[] = keys.flat();
-  const grids: Letter[] = props.grids.flat();
+  const flatGrids: Letter[] = grids.flat();
   // Colorcode used letters
-  grids.forEach((element: Letter) => {
+  flatGrids.forEach((element: Letter) => {
     keyList.forEach((e) => {
       if (e.letter === element.letter) {
         e.state = LetterState.unmatched;
@@ -85,22 +97,33 @@ function Keyboard(props: any) {
     });
   });
 
-  let keyboard = [];
-  for (let i = 0; i < keys.length; ++i) {
-    keyboard.push(renderRow(keys[i]));
-  }
-  return <footer className={classname}>{keyboard}</footer>;
+  return (
+    <footer
+      className={classnames.join(" ")}
+      style={{
+        position: "absolute",
+        top: "100vh",
+        transform: "translate(-25%, -150%)",
+        width: "200%",
+      }}
+    >
+      {keys.map((k, i) => (
+        <Row key={i} letters={k} center={true} />
+      ))}
+    </footer>
+  );
 }
 
-function Gameboard(props: any) {
-  function renderRow(values: Letter[]) {
-    return <Row values={values} />;
-  }
-
+function Gameboard(props: {
+  dict: string[];
+  word: string;
+  length: number;
+  tries: number;
+}) {
   function handleKey(event: KeyboardEvent) {
     // If a text field is focused, then do nothing
-    const element : Element | null = document.activeElement;
-    const sidebar : Element = document.getElementById('box')!;
+    const element: Element | null = document.activeElement;
+    const sidebar: Element = document.getElementById("box")!;
     if (element && sidebar.contains(element)) {
       return;
     }
@@ -151,7 +174,7 @@ function Gameboard(props: any) {
     setIdx(newIdx);
   }
 
-  const className: string = "gameboard";
+  const classNames = ["gameboard"];
   // Populates grids with distinct arrays
   const [grids, setGrids] = useState(
     Array(props.tries)
@@ -167,7 +190,7 @@ function Gameboard(props: any) {
 
   let board = [];
   for (var i in grids) {
-    board.push(renderRow(grids[i]));
+    board.push(<Row key={i} letters={grids[i]} center={false} />);
   }
   const [idx, setIdx] = useState([0, 0]);
 
@@ -176,7 +199,7 @@ function Gameboard(props: any) {
     return () => document.removeEventListener("keydown", handleKey);
   });
 
-  // Update the rest and show end game alart
+  // Update the rest and show end game alert
   useEffect(() => {
     if (isGameWon) {
       window.setTimeout(
@@ -192,7 +215,16 @@ function Gameboard(props: any) {
   }, [isGameOver, isGameWon]);
 
   return (
-    <div className={className}>
+    <div
+      style={{
+        position: "fixed",
+        width: "100vw",
+        left: "50%",
+        textAlign: "center",
+        transform: "translate(-50%, 0)",
+      }}
+      className={classNames.join(" ")}
+    >
       {board}
       <Keyboard grids={grids}></Keyboard>
     </div>
@@ -204,10 +236,19 @@ function Game() {
   const [tries, setTries] = useState<number>(6);
   const [dict, setDict] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
+  const [fullDict, setFullDict] = useState<string[]>([]);
 
-  // Fetch link info to set word and tries
-  const linkdata: string = window.location.search;
-  const [assignedWord, assignedTries] = decode(linkdata) ?? [null, null];
+  // Set word and tries depending on the link
+  const [assignedWord, assignedTries] = decode(window.location.search) ?? [
+    null,
+    null,
+  ];
+
+  // Set page background color
+  useEffect(() => {
+    document.documentElement.style.setProperty("background-color", "#222222");
+  }, []);
+
   useEffect(() => {
     if (assignedWord && assignedTries) {
       setWord(assignedWord);
@@ -217,20 +258,21 @@ function Game() {
 
   // Fetch words of length long
   useEffect(() => {
-    const wordLength = assignedWord ? assignedWord.length : 5;
-    const plDict: string[] = [];
+      
+        const wordLength = assignedWord ? assignedWord.length : 5;
+        const plDict: string[] = [];
     wordsList.forEach((value) => {
       if (value.length === wordLength) {
         plDict.push(value); // Intentional
       }
     });
-    setDict(plDict);
-    if (!assignedWord) {
-      setWord(plDict[Math.floor(Math.random() * dict.length)]);
-    }
-    console.log(
-      "There are " + plDict.length + " " + wordLength + "-letter words."
-    );
+        setDict(plDict);
+        if (!assignedWord) {
+          setWord(plDict[Math.floor(Math.random() * plDict.length)]);
+        }
+        console.log(
+          "There are " + plDict.length + " " + wordLength + "-letter words."
+        );
   }, []);
 
   if (word !== "") {
@@ -241,8 +283,8 @@ function Game() {
 
   if (word !== "") {
     return (
-      <div>
-        <PersistentDrawerLeft dict={dict}/>
+      <div style={{ backgroundColor: "#222222" }}>
+        <PersistentDrawerLeft dict={fullDict} />
         <Gameboard dict={dict} word={word} length={word.length} tries={tries} />
       </div>
     );

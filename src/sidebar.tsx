@@ -11,7 +11,6 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { ClassNames } from "@emotion/react";
 import * as Hash from "./hash";
 
 const drawerWidth = 50;
@@ -101,7 +100,7 @@ export function PersistentDrawerLeft(props: any) {
     if (
       isNaN(newTries) ||
       newTries < 1 ||
-      10 < newTries
+      Hash.maxTries <= newTries 
     ) {
       event.target.setCustomValidity(
         "The number of tries must be a integer between 1-10."
@@ -112,19 +111,6 @@ export function PersistentDrawerLeft(props: any) {
     setInputTries(newTries);
     setIsInputTriesValid(true);
   }
-
-  // Gives custom warning about invalid word
-  // const inputWord = document.getElementById(
-  //   "input_word"
-  // ) as HTMLInputElement | null;
-  // if (inputWord) {
-  //   inputWord!.oninput = (e) => {
-  //     inputWord!.setCustomValidity("");
-  //     inputWord!.oninvalid = (event) => {
-  //       inputWord!.setCustomValidity("Word can only contain alphabets.");
-  //     };
-  //   };
-  // }
 
   // Close the appbar if the user clicks outside of it
   window.onclick = function (event) {
@@ -173,7 +159,11 @@ export function PersistentDrawerLeft(props: any) {
         open={open}
       >
         <DrawerHeader>
-          <h2 className="sidebarHeading">make your wordle</h2>
+          <h2 className="sidebarHeading" 
+            style={{
+              textAlign: "center",
+              flexGrow: "1",
+            }}>make your wordle</h2>
           <IconButton onClick={() => setOpen(false)}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -195,8 +185,10 @@ export function PersistentDrawerLeft(props: any) {
             maxLength={Hash.wordMaxLength}
           ></input>
           <br></br>
-          <label>Enter number of tries: </label>
+          <label style={formStyle}>Enter number of tries: </label>
           <input
+            style={formStyle}
+            id="input_tries"
             type="number"
             ref={refInputTries}
             value={inputTries}
@@ -208,6 +200,7 @@ export function PersistentDrawerLeft(props: any) {
           <br></br>
           <input
             type="button"
+            style={formStyle}
             onClick={(e) => {
               if (refInputWord?.current?.checkValidity() === false) {
                 refInputWord?.current?.reportValidity();
@@ -223,8 +216,20 @@ export function PersistentDrawerLeft(props: any) {
             }}
             value="Generate"
           ></input>
-          {generated && <h2>Go to the following link</h2>}
-          {generated && <h3 id="generated">{generated}</h3>}
+
+          {generated && (
+            <React.Fragment>
+              <h2>Go to the following link</h2>
+              <h3
+                id="generated"
+                style={{
+                  wordWrap: "break-word",
+                }}
+              >
+                {generated}
+              </h3>
+            </React.Fragment>
+          )}
         </form>
       </Drawer>
       <Main open={open}>
