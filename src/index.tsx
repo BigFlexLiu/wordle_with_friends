@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { JsxAttributes, transform } from "typescript";
 import { decode } from "./hash";
-import "./index.css";
 import { PersistentDrawerLeft } from "./sidebar";
-import { wordsList } from './words';
+import { wordsList } from "./words";
 
 enum LetterState {
   unvalidated = "unvalidated",
@@ -36,7 +35,7 @@ function Box({ letter }: { letter: Letter }) {
 
   return (
     <button
-    key={letter.letter}
+      key={letter.letter}
       className={classNames.join(" ")}
       style={{
         color: "#FFF",
@@ -57,9 +56,11 @@ function Box({ letter }: { letter: Letter }) {
   );
 }
 
-function Row({ letters, center }: {letters: Letter[]; center: boolean }) {
+function Row({ letters, center }: { letters: Letter[]; center: boolean }) {
   let classNames = ["row"];
-  let row: Array<JSX.Element> = letters.map((e, i) => <Box key={i} letter={e} />);
+  let row: Array<JSX.Element> = letters.map((e, i) => (
+    <Box key={i} letter={e} />
+  ));
   const style: React.CSSProperties = {};
   if (center) {
     style.textAlign = "center";
@@ -236,7 +237,6 @@ function Game() {
   const [tries, setTries] = useState<number>(6);
   const [dict, setDict] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
-  const [fullDict, setFullDict] = useState<string[]>([]);
 
   // Set word and tries depending on the link
   const [assignedWord, assignedTries] = decode(window.location.search) ?? [
@@ -258,21 +258,20 @@ function Game() {
 
   // Fetch words of length long
   useEffect(() => {
-      
-        const wordLength = assignedWord ? assignedWord.length : 5;
-        const plDict: string[] = [];
+    const wordLength = assignedWord ? assignedWord.length : 5;
+    const plDict: string[] = [];
     wordsList.forEach((value) => {
       if (value.length === wordLength) {
         plDict.push(value); // Intentional
       }
     });
-        setDict(plDict);
-        if (!assignedWord) {
-          setWord(plDict[Math.floor(Math.random() * plDict.length)]);
-        }
-        console.log(
-          "There are " + plDict.length + " " + wordLength + "-letter words."
-        );
+    setDict(plDict);
+    if (!assignedWord) {
+      setWord(plDict[Math.floor(Math.random() * plDict.length)]);
+    }
+    console.log(
+      "There are " + plDict.length + " " + wordLength + "-letter words."
+    );
   }, []);
 
   if (word !== "") {
@@ -284,7 +283,7 @@ function Game() {
   if (word !== "") {
     return (
       <div style={{ backgroundColor: "#222222" }}>
-        <PersistentDrawerLeft dict={fullDict} />
+        <PersistentDrawerLeft dict={wordsList} />
         <Gameboard dict={dict} word={word} length={word.length} tries={tries} />
       </div>
     );

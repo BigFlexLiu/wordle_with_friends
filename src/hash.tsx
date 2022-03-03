@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 
-const domainName: string = window.location.origin + '/?'
+const domainName: string = window.location.origin + "/?";
 
 const alphabets: string[] = "abcdefghijklmnopqrstuvwxyz".split("");
 const primes: bigint[] = [
@@ -40,12 +40,12 @@ export function encode(word: string, tries: number) {
     })
     .reduce((pre, cur) => pre + cur);
 
-    const encoded = new URLSearchParams('');
-    encoded.set(URLWord, `${wordEncoded}`);
-    encoded.set(URLOrder, `${order}`);
-    encoded.set(URLTries, `${tries}`);
+  const encoded = new URLSearchParams("");
+  encoded.set(URLWord, `${wordEncoded}`);
+  encoded.set(URLOrder, `${order}`);
+  encoded.set(URLTries, `${tries}`);
 
-  return domainName +  encoded.toString();
+  return domainName + encoded.toString();
 }
 
 // Decodes code into a word and number of tries

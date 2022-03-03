@@ -75,6 +75,8 @@ export function PersistentDrawerLeft(props: any) {
   const refInputWord = React.useRef<HTMLInputElement>(null);
   const refInputTries = React.useRef<HTMLInputElement>(null);
 
+  const formStyle: React.CSSProperties = { fontSize: "1.5em" };
+
   function handleInputWordOnChange(event: { target: HTMLInputElement }) {
     const newWord: string = event.target.value;
     // Check new word only contains letters
@@ -97,11 +99,7 @@ export function PersistentDrawerLeft(props: any) {
 
   function handleInputTriesOnChange(event: { target: HTMLInputElement }) {
     const newTries = parseInt(event.target.value);
-    if (
-      isNaN(newTries) ||
-      newTries < 1 ||
-      Hash.maxTries <= newTries 
-    ) {
+    if (isNaN(newTries) || newTries < 1 || Hash.maxTries <= newTries) {
       event.target.setCustomValidity(
         "The number of tries must be a integer between 1-10."
       );
@@ -159,11 +157,15 @@ export function PersistentDrawerLeft(props: any) {
         open={open}
       >
         <DrawerHeader>
-          <h2 className="sidebarHeading" 
+          <h2
+            className="sidebarHeading"
             style={{
               textAlign: "center",
               flexGrow: "1",
-            }}>make your wordle</h2>
+            }}
+          >
+            make your wordle
+          </h2>
           <IconButton onClick={() => setOpen(false)}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
@@ -174,8 +176,9 @@ export function PersistentDrawerLeft(props: any) {
         </DrawerHeader>
         <Divider />
         <form className="make_wordle">
-          <label>Enter your word: </label>
+          <label style={formStyle}>Enter your word: </label>
           <input
+            style={formStyle}
             ref={refInputWord}
             type="text"
             value={inputWord}
