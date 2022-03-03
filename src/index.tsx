@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { decode } from "./hash";
 import "./index.css";
 import PersistentDrawerLeft from "./sidebar";
+import { wordsList } from './words';
 
 class LetterState {
   // Create new instances of the same class as static attributes
@@ -199,7 +200,6 @@ function Gameboard(props: any) {
 
 function Game() {
   const title: string = "wordle with friends";
-  const textfile = "wiki-100k.txt";
   const [tries, setTries] = useState<number>(6);
   const [dict, setDict] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
@@ -216,24 +216,20 @@ function Game() {
 
   // Fetch words of length long
   useEffect(() => {
-    fetch(textfile)
-      .then((response) => response.text())
-      .then((text) => {
-        const wordLength = assignedWord ? assignedWord.length : 5;
-        const plDict: string[] = [];
-        text.split("\n").forEach((value) => {
-          if (value.length === wordLength) {
-            plDict.push(value); // Intentional
-          }
-        });
-        setDict(plDict);
-        if (!assignedWord) {
-          setWord(plDict[Math.floor(Math.random() * dict.length)]);
-        }
-        console.log(
-          "There are " + plDict.length + " " + wordLength + "-letter words."
-        );
-      });
+    const wordLength = assignedWord ? assignedWord.length : 5;
+    const plDict: string[] = [];
+    wordsList.forEach((value) => {
+      if (value.length === wordLength) {
+        plDict.push(value); // Intentional
+      }
+    });
+    setDict(plDict);
+    if (!assignedWord) {
+      setWord(plDict[Math.floor(Math.random() * dict.length)]);
+    }
+    console.log(
+      "There are " + plDict.length + " " + wordLength + "-letter words."
+    );
   }, []);
 
   if (word !== "") {
