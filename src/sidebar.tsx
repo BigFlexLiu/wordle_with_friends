@@ -223,16 +223,19 @@ export default function PersistentDrawerLeft(props: any) {
             }}
             value="Generate"
           ></input>
-          {generated && <h2>Go to the following link</h2>}
+
           {generated && (
-            <h3
-              id="generated"
-              style={{
-                wordWrap: "break-word",
-              }}
-            >
-              {generated}
-            </h3>
+            <React.Fragment>
+              <h2>Go to the following link</h2>
+              <h3
+                id="generated"
+                style={{
+                  wordWrap: "break-word",
+                }}
+              >
+                {generated}
+              </h3>
+            </React.Fragment>
           )}
         </form>
       </Drawer>

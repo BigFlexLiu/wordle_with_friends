@@ -34,13 +34,14 @@ function Box({ letter }: { letter: Letter }) {
 
   return (
     <button
+    key={letter.letter}
       className={classNames.join(" ")}
       style={{
         color: "#FFF",
         fontSize: "35px",
         textTransform: "capitalize",
         verticalAlign: "top",
-        backgroundColor: backgroundColor,
+        backgroundColor,
         border: "1px solid #c4c4c4",
         width: "50px",
         height: "50px",
@@ -54,12 +55,9 @@ function Box({ letter }: { letter: Letter }) {
   );
 }
 
-function Row({ letters, center }: { letters: Letter[]; center: boolean }) {
+function Row({ letters, center }: {letters: Letter[]; center: boolean }) {
   let classNames = ["row"];
-  let row: Array<JSX.Element> = [];
-  for (var i in letters) {
-    row.push(<Box letter={letters[i]} />);
-  }
+  let row: Array<JSX.Element> = letters.map((e, i) => <Box key={i} letter={e} />);
   const style: React.CSSProperties = {};
   if (center) {
     style.textAlign = "center";
@@ -107,8 +105,8 @@ function Keyboard({ grids }: { grids: Letter[][] }) {
         width: "200%",
       }}
     >
-      {keys.map((k) => (
-        <Row letters={k} center={true} />
+      {keys.map((k, i) => (
+        <Row key={i} letters={k} center={true} />
       ))}
     </footer>
   );
@@ -190,7 +188,7 @@ function Gameboard(props: {
 
   let board = [];
   for (var i in grids) {
-    board.push(<Row letters={grids[i]} center={false} />);
+    board.push(<Row key={i} letters={grids[i]} center={false} />);
   }
   const [idx, setIdx] = useState([0, 0]);
 
@@ -240,11 +238,14 @@ function Game() {
   const [fullDict, setFullDict] = useState<string[]>([]);
 
   // Set word and tries depending on the link
-  const [assignedWord, assignedTries] = decode(window.location.search) ?? [null, null];
+  const [assignedWord, assignedTries] = decode(window.location.search) ?? [
+    null,
+    null,
+  ];
 
   // Set page background color
   useEffect(() => {
-    document.documentElement.style.setProperty('background-color', '#222222');
+    document.documentElement.style.setProperty("background-color", "#222222");
   }, []);
 
   useEffect(() => {
@@ -294,4 +295,4 @@ function Game() {
   return null;
 }
 
-ReactDOM.render(<Game/>, document.getElementById("root"));
+ReactDOM.render(<Game />, document.getElementById("root"));
