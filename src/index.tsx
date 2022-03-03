@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { JsxAttributes, transform } from "typescript";
 import { decode } from "./hash";
-import PersistentDrawerLeft from "./sidebar";
+import "./index.css";
+import { PersistentDrawerLeft } from "./sidebar";
+import { wordsList } from './words';
 
 enum LetterState {
   unvalidated = "unvalidated",
@@ -177,10 +179,10 @@ function Gameboard(props: {
   const [grids, setGrids] = useState(
     Array(props.tries)
       .fill(null)
-      .map((n) =>
+      .map(() =>
         Array(props.length)
           .fill(null)
-          .map((n) => new Letter())
+          .map(() => new Letter())
       )
   );
   const [isGameWon, setIsGameWon] = useState(false);
@@ -231,7 +233,6 @@ function Gameboard(props: {
 
 function Game() {
   const title: string = "wordle with friends";
-  const textfile = "wiki-100k.txt";
   const [tries, setTries] = useState<number>(6);
   const [dict, setDict] = useState<string[]>([]);
   const [word, setWord] = useState<string>("");
@@ -257,17 +258,14 @@ function Game() {
 
   // Fetch words of length long
   useEffect(() => {
-    fetch(textfile)
-      .then((response) => response.text())
-      .then((text) => {
-        setFullDict(text.split("\n"));
+      
         const wordLength = assignedWord ? assignedWord.length : 5;
         const plDict: string[] = [];
-        text.split("\n").forEach((value) => {
-          if (value.length === wordLength) {
-            plDict.push(value);
-          }
-        });
+    wordsList.forEach((value) => {
+      if (value.length === wordLength) {
+        plDict.push(value); // Intentional
+      }
+    });
         setDict(plDict);
         if (!assignedWord) {
           setWord(plDict[Math.floor(Math.random() * plDict.length)]);
@@ -275,7 +273,6 @@ function Game() {
         console.log(
           "There are " + plDict.length + " " + wordLength + "-letter words."
         );
-      });
   }, []);
 
   if (word !== "") {
