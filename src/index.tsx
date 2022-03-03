@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { decode } from "./hash";
 import "./index.css";
-import PersistentDrawerLeft from "./sidebar";
+import { PersistentDrawerLeft } from "./sidebar";
 import { wordsList } from './words';
 
+// TODO use enum
 class LetterState {
   // Create new instances of the same class as static attributes
   static unvalidated = new LetterState("unvalidated");
@@ -155,10 +156,10 @@ function Gameboard(props: any) {
   const [grids, setGrids] = useState(
     Array(props.tries)
       .fill(null)
-      .map((n) =>
+      .map(() =>
         Array(props.length)
           .fill(null)
-          .map((n) => new Letter())
+          .map(() => new Letter())
       )
   );
   const [isGameWon, setIsGameWon] = useState(false);

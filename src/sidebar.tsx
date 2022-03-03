@@ -63,29 +63,23 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // justifyContent: "flex-end",
 }));
 
-export default function PersistentDrawerLeft(props: any) {
+export function PersistentDrawerLeft(props: any) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   const [generated, setGenerated] = React.useState<string | null>(null);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   const [inputWord, setInputWord] = React.useState("");
   const [inputTries, setInputTries] = React.useState(6);
   const [isInputWordValid, setIsInputWordValid] = React.useState(false);
   const [isInputTriesValid, setIsInputTriesValid] = React.useState(true);
+  const refInputWord = React.useRef<HTMLInputElement>(null);
+  const refInputTries = React.useRef<HTMLInputElement>(null);
 
   function handleInputWordOnChange(event: { target: HTMLInputElement }) {
     const newWord: string = event.target.value;
     // Check new word only contains letters
-    const match = newWord.match(/[a-z]*/);
+    const match = newWord.match(/^[a-z]+$/);
     if (match && match[0] !== newWord) {
       event.target.setCustomValidity("word can only contain letters");
       setIsInputWordValid(false);
@@ -103,12 +97,11 @@ export default function PersistentDrawerLeft(props: any) {
   }
 
   function handleInputTriesOnChange(event: { target: HTMLInputElement }) {
-    const newTries: number = Number(event.target.value);
+    const newTries = parseInt(event.target.value);
     if (
       isNaN(newTries) ||
       newTries < 1 ||
-      10 < newTries ||
-      !Number.isInteger(newTries)
+      10 < newTries
     ) {
       event.target.setCustomValidity(
         "The number of tries must be a integer between 1-10."
@@ -154,7 +147,7 @@ export default function PersistentDrawerLeft(props: any) {
             id="menu"
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onClick={() => setOpen(true)}
             edge="start"
             sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
@@ -181,7 +174,7 @@ export default function PersistentDrawerLeft(props: any) {
       >
         <DrawerHeader>
           <h2 className="sidebarHeading">make your wordle</h2>
-          <IconButton onClick={handleDrawerClose}>
+          <IconButton onClick={() => setOpen(false)}>
             {theme.direction === "ltr" ? (
               <ChevronLeftIcon />
             ) : (
@@ -190,10 +183,10 @@ export default function PersistentDrawerLeft(props: any) {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <form className="make_wordle" action="#" method="get">
+        <form className="make_wordle">
           <label>Enter your word: </label>
           <input
-            id="input_word"
+            ref={refInputWord}
             type="text"
             value={inputWord}
             onChange={handleInputWordOnChange}
@@ -204,8 +197,8 @@ export default function PersistentDrawerLeft(props: any) {
           <br></br>
           <label>Enter number of tries: </label>
           <input
-            id="input_tries"
             type="number"
+            ref={refInputTries}
             value={inputTries}
             onChange={handleInputTriesOnChange}
             min={1}
@@ -214,8 +207,14 @@ export default function PersistentDrawerLeft(props: any) {
           ></input>
           <br></br>
           <input
-            type="submit"
+            type="button"
             onClick={(e) => {
+              if (refInputWord?.current?.checkValidity() === false) {
+                refInputWord?.current?.reportValidity();
+              }
+              if (refInputTries?.current?.checkValidity() === false) {
+                refInputTries?.current?.reportValidity();
+              }
               if (isInputTriesValid && isInputWordValid) {
                 generateWordle();
               } else {
@@ -233,10 +232,6 @@ export default function PersistentDrawerLeft(props: any) {
       </Main>
     </Box>
   );
-
-  function onSubmit(e: any) {
-    console.log();
-  }
 
   function generateWordle() {
     setGenerated(Hash.encode(inputWord, inputTries));

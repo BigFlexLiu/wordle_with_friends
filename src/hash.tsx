@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 
-const domainPrefix: string = 'http://localhost:3000/?'
+const domainPrefix: string = window.location.origin + '/?'
 
 const alphabets: string[] = "abcdefghijklmnopqrstuvwxyz".split("");
 const primes: bigint[] = [
@@ -17,6 +17,7 @@ function stringToPrime(s: string) {
 
 // Encodes word and tries
 export function encode(word: string, tries: number) {
+  // TODO Use URLSearchParams
   const letters: string[] = word.split("");
   // Encode word into the product of primes and the order of letters
   const primeList: bigint[] = letters.map((value) => stringToPrime(value));
@@ -40,6 +41,7 @@ export function encode(word: string, tries: number) {
 // Produces a [string, number] pair if possible
 // produces null if not possible
 export function decode(code: string): [string, number] | null {
+  // TODO Use URLSearchParams
   const wordMatch = code.match(/word=[0-9]+/);
   if (!wordMatch) {
     return null;
