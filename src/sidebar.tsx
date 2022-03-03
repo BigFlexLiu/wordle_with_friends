@@ -108,7 +108,7 @@ export default function PersistentDrawerLeft(props: any) {
     if (
       isNaN(newTries) ||
       newTries < 1 ||
-      10 < newTries ||
+      Hash.maxTries <= newTries ||
       !Number.isInteger(newTries)
     ) {
       event.target.setCustomValidity(

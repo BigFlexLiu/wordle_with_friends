@@ -239,9 +239,8 @@ function Game() {
   const [word, setWord] = useState<string>("");
   const [fullDict, setFullDict] = useState<string[]>([]);
 
-  // Fetch link info to set word and tries
-  const linkdata: string = window.location.search;
-  const [assignedWord, assignedTries] = decode(linkdata) ?? [null, null];
+  // Set word and tries depending on the link
+  const [assignedWord, assignedTries] = decode(window.location.search) ?? [null, null];
 
   // Set page background color
   useEffect(() => {
