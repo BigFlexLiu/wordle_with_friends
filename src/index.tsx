@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { JsxAttributes, transform } from "typescript";
 import { decode } from "./hash";
 import { PersistentDrawerLeft } from "./sidebar";
 import { wordsList } from "./words";
+import { FaBackspace } from "react-icons/fa";
+import { BsArrowReturnLeft } from "react-icons/bs";
 
 enum LetterState {
   unvalidated = "unvalidated",
@@ -15,10 +16,11 @@ enum LetterState {
 // Corresponds to each letter input
 class Letter {
   letter: string = "";
+  icon: ReactElement | null = null;
   state: LetterState = LetterState.unvalidated;
 }
 
-function Box({ letter }: { letter: Letter }) {
+function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
   const classNames = ["box", letter.state];
   let backgroundColor = "#222222";
   switch (letter.state) {
@@ -32,6 +34,9 @@ function Box({ letter }: { letter: Letter }) {
       backgroundColor = "#3c3";
       break;
   }
+  const width: string = `${
+    1 + 0.5 * (letter.icon ? 1 : letter.letter.length || 1)
+  }em`;
 
   return (
     <button
@@ -39,19 +44,25 @@ function Box({ letter }: { letter: Letter }) {
       className={classNames.join(" ")}
       style={{
         color: "#FFF",
-        fontSize: "35px",
+        fontSize: "2em",
         textTransform: "capitalize",
         verticalAlign: "top",
         backgroundColor,
         border: "1px solid #c4c4c4",
-        width: "50px",
-        height: "50px",
+        width,
+        height: width,
         marginRight: "5px",
         marginBottom: "5px",
       }}
-      disabled
+      onClick={() => {
+        if (isKey) {
+          document.dispatchEvent(
+            new KeyboardEvent("keydown", { key: letter.letter })
+          );
+        }
+      }}
     >
-      {letter.letter}
+      {letter.icon || letter.letter}
     </button>
   );
 }
@@ -59,7 +70,7 @@ function Box({ letter }: { letter: Letter }) {
 function Row({ letters, center }: { letters: Letter[]; center: boolean }) {
   let classNames = ["row"];
   let row: Array<JSX.Element> = letters.map((e, i) => (
-    <Box key={i} letter={e} />
+    <Box key={i} letter={e} isKey={center} />
   ));
   const style: React.CSSProperties = {};
   if (center) {
@@ -79,16 +90,23 @@ function Keyboard({ grids }: { grids: Letter[][] }) {
   const keys: Letter[][] = [
     "qwertyuiop".split(""),
     "asdfghjkl".split(""),
-    "zxcvbnm".split(""),
+    ["Backspace"].concat("zxcvbnm".split("")).concat("Enter"),
   ].map((lst) =>
     lst.map((s) => {
       let l: Letter = new Letter();
       l.letter = s;
+      // Add icon to backspace
+      if (s === "Backspace") {
+        l.icon = <FaBackspace />;
+      } else if (s === "Enter") {
+        l.icon = <BsArrowReturnLeft fill='white' color='green' />;
+      }
       return l;
     })
   );
   const keyList: Letter[] = keys.flat();
   const flatGrids: Letter[] = grids.flat();
+  // Add icon for backspace
   // Colorcode used letters
   flatGrids.forEach((element: Letter) => {
     keyList.forEach((e) => {
@@ -129,6 +147,7 @@ function Gameboard(props: {
       return;
     }
 
+    console.log(event.key);
     let newGrids: Letter[][] = grids.slice();
     let newIdx: Array<number> = idx.slice();
     // Adds input if is letter and row is not filled

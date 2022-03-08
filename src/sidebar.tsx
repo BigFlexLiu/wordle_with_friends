@@ -231,6 +231,9 @@ export function PersistentDrawerLeft(props: any) {
               >
                 {generated}
               </h3>
+              <button style={formStyle} onClick={(e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(generated)}}>Copy link</button>
             </React.Fragment>
           )}
         </form>
