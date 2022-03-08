@@ -34,9 +34,10 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
       backgroundColor = "#3c3";
       break;
   }
-  const width: string = `${
-    1 + 0.5 * (letter.icon ? 1 : letter.letter.length || 1)
-  }em`;
+  const size: string = `${
+    2 + 0.5 * (letter.icon ? 1 : letter.letter.length || 1)
+  }vw`;
+  const minSize: string = isKey ? '30px' : '25px';
 
   return (
     <button
@@ -44,15 +45,17 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
       className={classNames.join(" ")}
       style={{
         color: "#FFF",
-        fontSize: "2em",
+        fontSize: "2vw",
         textTransform: "capitalize",
         verticalAlign: "top",
         backgroundColor,
         border: "1px solid #c4c4c4",
-        width,
-        height: width,
-        marginRight: "5px",
-        marginBottom: "5px",
+        width: size,
+        height: size,
+        minWidth: minSize,
+        minHeight: minSize,
+        marginRight: "0.5vw",
+        marginBottom: "0.5vw",
       }}
       onClick={() => {
         if (isKey) {
@@ -120,9 +123,9 @@ function Keyboard({ grids }: { grids: Letter[][] }) {
     <footer
       className={classnames.join(" ")}
       style={{
-        position: "absolute",
-        top: "100vh",
-        transform: "translate(-25%, -150%)",
+        position: 'fixed',
+        bottom: 0,
+        transform: "translate(-25%, 0%)",
         width: "200%",
       }}
     >
@@ -237,11 +240,13 @@ function Gameboard(props: {
   return (
     <div
       style={{
+        flexGrow: 1,
         position: "fixed",
+        height: '90%',
         width: "100vw",
         left: "50%",
         textAlign: "center",
-        transform: "translate(-50%, 0)",
+        transform: "translate(-50%, 0%)",
       }}
       className={classNames.join(" ")}
     >
