@@ -75,10 +75,10 @@ export function PersistentDrawerLeft(props: any) {
   const refInputWord = React.useRef<HTMLInputElement>(null);
   const refInputTries = React.useRef<HTMLInputElement>(null);
 
-  const formStyle: React.CSSProperties = { fontSize: "1.5em" };
+  const formStyle: React.CSSProperties = { fontSize: "3vw" };
 
   function handleInputWordOnChange(event: { target: HTMLInputElement }) {
-    const newWord: string = event.target.value;
+    const newWord: string = event.target.value.toLowerCase();
     // Check new word only contains letters
     const match = newWord.match(/^[a-z]+$/);
     if (match && match[0] !== newWord) {
@@ -99,14 +99,15 @@ export function PersistentDrawerLeft(props: any) {
 
   function handleInputTriesOnChange(event: { target: HTMLInputElement }) {
     const newTries = parseInt(event.target.value);
-    if (isNaN(newTries) || newTries < 1 || Hash.maxTries <= newTries) {
+    setInputTries(newTries);
+    if (isNaN(newTries) || newTries < 1 || Hash.maxTries < newTries) {
       event.target.setCustomValidity(
-        "The number of tries must be a integer between 1-10."
+        "The number of tries must be a integer between 1-9."
       );
       setIsInputTriesValid(false);
       return;
     }
-    setInputTries(newTries);
+    event.target.setCustomValidity("");
     setIsInputTriesValid(true);
   }
 
@@ -160,6 +161,7 @@ export function PersistentDrawerLeft(props: any) {
           <h2
             className="sidebarHeading"
             style={{
+              fontSize: "3vw",
               textAlign: "center",
               flexGrow: "1",
             }}
@@ -168,9 +170,9 @@ export function PersistentDrawerLeft(props: any) {
           </h2>
           <IconButton onClick={() => setOpen(false)}>
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
+              <ChevronLeftIcon style={{ fontSize: "3vw" }} />
             ) : (
-              <ChevronRightIcon />
+              <ChevronRightIcon style={{ fontSize: "3vw" }} />
             )}
           </IconButton>
         </DrawerHeader>
@@ -222,18 +224,25 @@ export function PersistentDrawerLeft(props: any) {
 
           {generated && (
             <React.Fragment>
-              <h2>Go to the following link</h2>
+              <h2 style={{ fontSize: "4vw" }}>Go to the following link</h2>
               <h3
                 id="generated"
                 style={{
+                  fontSize: "2vw",
                   wordWrap: "break-word",
                 }}
               >
                 {generated}
               </h3>
-              <button style={formStyle} onClick={(e) => {
-                e.preventDefault();
-                navigator.clipboard.writeText(generated)}}>Copy link</button>
+              <button
+                style={formStyle}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigator.clipboard.writeText(generated);
+                }}
+              >
+                Copy link
+              </button>
             </React.Fragment>
           )}
         </form>
