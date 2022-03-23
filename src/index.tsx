@@ -37,7 +37,7 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
   const size: string = `${
     2 + 0.5 * (letter.icon ? 1 : letter.letter.length || 1)
   }vw`;
-  const minSize: string = isKey ? '30px' : '25px';
+  const minSize: string = isKey ? "30px" : "25px";
 
   return (
     <button
@@ -102,7 +102,7 @@ function Keyboard({ grids }: { grids: Letter[][] }) {
       if (s === "Backspace") {
         l.icon = <FaBackspace />;
       } else if (s === "Enter") {
-        l.icon = <BsArrowReturnLeft fill='white' color='green' />;
+        l.icon = <BsArrowReturnLeft fill="white" color="green" />;
       }
       return l;
     })
@@ -123,7 +123,7 @@ function Keyboard({ grids }: { grids: Letter[][] }) {
     <footer
       className={classnames.join(" ")}
       style={{
-        position: 'fixed',
+        position: "fixed",
         bottom: 0,
         transform: "translate(-25%, 0%)",
         width: "200%",
@@ -150,7 +150,6 @@ function Gameboard(props: {
       return;
     }
 
-    console.log(event.key);
     let newGrids: Letter[][] = grids.slice();
     let newIdx: Array<number> = idx.slice();
     // Adds input if is letter and row is not filled
@@ -166,16 +165,26 @@ function Gameboard(props: {
       // check word is a word
       if (props.dict.includes(word)) {
         // set state of each letter in the row matching against the word
+        let letters = props.word.split("");
+        // Check correct
         for (let i = 0; i < props.length; ++i) {
-          // check for match
-          if (word[i] === props.word[i]) {
+          if (word[i] === letters[i]) {
             newGrids[newIdx[0]][i].state = LetterState.correct;
-          } else if (props.word.includes(word[i])) {
-            newGrids[newIdx[0]][i].state = LetterState.wrong_ordered;
-          } else {
-            newGrids[newIdx[0]][i].state = LetterState.unmatched;
+            letters[i] = "";
           }
         }
+        // Check wrong_ordered
+        for (let i = 0; i < props.length; ++i) {
+          if (newGrids[newIdx[0]][i].state === LetterState.unvalidated) {
+            if (letters.includes(word[i])) {
+              newGrids[newIdx[0]][i].state = LetterState.wrong_ordered;
+              letters.splice(i, 1);
+            } else {
+              newGrids[newIdx[0]][i].state = LetterState.unmatched;
+            }
+          }
+        }
+
         // Game won or lost
         // TODO: Make it more happy
         if (props.word === word) {
@@ -242,7 +251,7 @@ function Gameboard(props: {
       style={{
         flexGrow: 1,
         position: "fixed",
-        height: '90%',
+        height: "90%",
         width: "100vw",
         left: "50%",
         textAlign: "center",
