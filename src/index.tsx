@@ -48,12 +48,12 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
   const size: string = '2.5vw';
   const defaultFontSize: string = '2vw';
   const minSize: number = isKey ? 30 : 25;
-  const useMinSize = screenWidth / 12 <= minSize;
+  const useMinSize = screenWidth * 0.025 <= minSize;
 
   const sizeStyles: React.CSSProperties = {
-    fontSize: useMinSize ? minSize - 10 + 'px' : defaultFontSize,
-    width: useMinSize ? minSize + 'px' : size,
-    height: useMinSize ? minSize * 1.2 + 'px' : size,
+    fontSize: useMinSize ? screenWidth * 0.08 - 10 + 'px' : defaultFontSize,
+    width: useMinSize ? screenWidth * 0.08 + 'px' : size,
+    height: useMinSize ? screenWidth * 0.08 * (isKey ? 1.25 : 1) + 'px' : size,
   };
 
   return (
@@ -67,8 +67,6 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
         verticalAlign: "top",
         backgroundColor,
         border: "1px solid #c4c4c4",
-        minWidth: minSize + 'px',
-        minHeight: minSize + 'px',
         marginRight: "0.5vw",
         marginBottom: "0.5vw",
       }}
