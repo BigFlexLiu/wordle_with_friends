@@ -34,10 +34,14 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
       backgroundColor = "#3c3";
       break;
   }
-  const size: string = `${
-    2 + 0.5 * (letter.icon ? 1 : letter.letter.length || 1)
-  }vw`;
-  const minSize: string = isKey ? "30px" : "25px";
+  const size: string = '2.5vw';
+  const defaultFontSize: string = '2vw';
+  const minSize: number = isKey ? 30 : 25;
+  const useMinSize = window.innerWidth / 12 <= minSize;
+
+  const fontSize: string = useMinSize ? minSize - 10 + 'px' : defaultFontSize;
+  const width = useMinSize ? minSize + 'px' : size;
+  const height = useMinSize ? minSize * 1.2 + 'px' : size;
 
   return (
     <button
@@ -45,15 +49,15 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
       className={classNames.join(" ")}
       style={{
         color: "#FFF",
-        fontSize: "2vw",
+        fontSize,
         textTransform: "capitalize",
         verticalAlign: "top",
         backgroundColor,
         border: "1px solid #c4c4c4",
-        width: size,
-        height: size,
-        minWidth: minSize,
-        minHeight: minSize,
+        width,
+        height,
+        minWidth: minSize + 'px',
+        minHeight: minSize + 'px',
         marginRight: "0.5vw",
         marginBottom: "0.5vw",
       }}
