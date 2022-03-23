@@ -34,28 +34,39 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
       backgroundColor = "#3c3";
       break;
   }
+  // Refresh hook
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  function handleResize(e: UIEvent) {
+    setScreenWidth(window.innerWidth);
+  } 
+
+  useEffect(() => {
+    document.addEventListener('resize', handleResize);
+    return () => document.removeEventListener('resize', handleResize);
+  });
+
   const size: string = '2.5vw';
   const defaultFontSize: string = '2vw';
   const minSize: number = isKey ? 30 : 25;
-  const useMinSize = window.innerWidth / 12 <= minSize;
+  const useMinSize = screenWidth / 12 <= minSize;
 
-  const fontSize: string = useMinSize ? minSize - 10 + 'px' : defaultFontSize;
-  const width = useMinSize ? minSize + 'px' : size;
-  const height = useMinSize ? minSize * 1.2 + 'px' : size;
+  const sizeStyles: React.CSSProperties = {
+    fontSize: useMinSize ? minSize - 10 + 'px' : defaultFontSize,
+    width: useMinSize ? minSize + 'px' : size,
+    height: useMinSize ? minSize * 1.2 + 'px' : size,
+  };
 
   return (
     <button
       key={letter.letter}
       className={classNames.join(" ")}
       style={{
+        ...sizeStyles,
         color: "#FFF",
-        fontSize,
         textTransform: "capitalize",
         verticalAlign: "top",
         backgroundColor,
         border: "1px solid #c4c4c4",
-        width,
-        height,
         minWidth: minSize + 'px',
         minHeight: minSize + 'px',
         marginRight: "0.5vw",
