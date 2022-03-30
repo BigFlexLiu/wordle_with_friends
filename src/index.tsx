@@ -46,14 +46,14 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
   });
 
   const size: string = '2.5vw';
-  const defaultFontSize: string = '2vw';
+  const defaultFontSize: string = '1.4vw';
   const minSize: number = isKey ? 30 : 25;
   const useMinSize = screenWidth * 0.025 <= minSize;
 
   const sizeStyles: React.CSSProperties = {
     fontSize: useMinSize ? screenWidth * 0.08 - 10 + 'px' : defaultFontSize,
-    width: useMinSize ? screenWidth * 0.08 + 'px' : size,
-    height: useMinSize ? screenWidth * 0.08 * (isKey ? 1.25 : 1) + 'px' : size,
+    width: useMinSize ? screenWidth * 0.09 + 'px' : size,
+    height: useMinSize ? screenWidth * 0.1 * (isKey ? 1.25 : 1) + 'px' : size,
   };
 
   return (
@@ -66,9 +66,10 @@ function Box({ letter, isKey }: { letter: Letter; isKey: boolean }) {
         textTransform: "capitalize",
         verticalAlign: "top",
         backgroundColor,
-        border: "1px solid #c4c4c4",
+        border: "2px solid #c4c4c4",
         marginRight: "0.5vw",
         marginBottom: "0.5vw",
+        padding: 0,
       }}
       onClick={() => {
         if (isKey) {
@@ -264,11 +265,12 @@ function Gameboard(props: {
       style={{
         flexGrow: 1,
         position: "fixed",
-        height: "90%",
+        height: "85%",
         width: "100vw",
         left: "50%",
         textAlign: "center",
         transform: "translate(-50%, 0%)",
+        marginTop: 30,
       }}
       className={classNames.join(" ")}
     >
